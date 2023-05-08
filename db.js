@@ -5,8 +5,6 @@ const mongoURI="mongodb+srv://root:root@cluster0.8lnw59s.mongodb.net/novafit-bac
 
 const connectToMongo=()=>{
 
-    bhdb
-    
     if(mongoose.connect(mongoURI))
     console.log("connected")
     
