@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 // const {is} = require('express/lib/request');
 const fetchtrainer=require("../middleware/fetchtrainer")
 const JWT_SECRET = "Abhiisgood$hi"
+// const JWT_SECRET = "abhisj$hi"
+
 
 // Route 1 create a user doenst require auth api/authtrainer/createuser no login required
 router.post('/createuser', [
@@ -18,6 +20,7 @@ router.post('/createuser', [
         {min: 3}
     )
 ], async (req, res) => {
+    let success=false;
     const errors = validationResult(req);
     if (! errors.isEmpty()) {
         return res.status(400).json({errors: errors.array()});
@@ -30,6 +33,7 @@ router.post('/createuser', [
         }
         const salt = await bcrypt.genSalt(10);
         const secPass = await bcrypt.hash(req.body.password, salt);
+        // console.log(secPass)
         trainer = await Trainer.create({
             name: req.body.name, 
             password: secPass, 
@@ -42,10 +46,12 @@ router.post('/createuser', [
                 id: trainer.id
             }
         }
+        
+        success=true;
 
         const authtoken = jwt.sign(data, JWT_SECRET);
 
-        res.json({authtoken})
+        res.json({success,authtoken})
     } catch (error) {
         console.error(error.message)
         res.status(500).send("Internal Server Error")
@@ -58,6 +64,7 @@ router.post('/login', [
     body('email', 'Enter a Valid Email').isEmail(),
     body('password', 'Password cant not be blank').exists()
 ], async (req, res) => {
+    let success=false;
 
     const errors = validationResult(req);
     if (! errors.isEmpty()) {
@@ -78,8 +85,9 @@ router.post('/login', [
                 id: trainer.id
             }
         }
+        success=true;
         const authtoken = jwt.sign(data, JWT_SECRET);
-        res.json({authtoken})
+        res.json({success,authtoken})
 
     } catch (error) {
         console.error(error.message)
