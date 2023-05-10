@@ -1,5 +1,7 @@
 const connectToMongo=require('./db')
 const express = require('express')
+const dotenv=require('dotenv')
+dotenv.config();
 // var cors =require('cors')
 connectToMongo();
 
@@ -7,7 +9,7 @@ const expressLayouts = require("express-ejs-layouts");
 const bodyParser = require("body-parser");
 
 
-const port = 7000
+const PORT =7000|| process.env.PORT;
 const app = express()
 
 app.get('/', (req, res) => {
@@ -35,8 +37,8 @@ app.use('/api',require('./routes/contact'))
 app.use('/api',require('./routes/review'))
 // app.use('/api/notes',require('./routes/notes'))
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}`)
 })
 
 

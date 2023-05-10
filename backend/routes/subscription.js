@@ -42,15 +42,15 @@ const handleSubscription = async(email , paymentId) => {
 
     let trainer = null;
     if (pay.plan === 'platinum') {
-      trainer = await Trainer.findOne({ experience: { $gte: 5 }, expertise: 'gym' });
+      trainer = await Trainer.findOne({ experience: { $gte: 5 }, expertise: 'Gym' });
     } else {
-      const gymTrainer = await Trainer.findOne({ experience: { $lte: 5 }, expertise: 'gym' });
+      const gymTrainer = await Trainer.findOne({ experience: { $lte: 5 }, expertise: 'Gym' });
       if (gymTrainer) {
         trainer = gymTrainer;
       }
     }
     console.log("trainee", trainee);
-    console.log("trainer", trainer);
+    console.log("trainer", trainer);  //check here
     console.log(pay.plan);
     const duration = pay.plan === 'silver' ? 30 : pay.plan === 'gold' ? 90 : 180;
     const sessions =pay.plan === 'silver' ? 2 :pay.plan=== 'gold' ? 10 : 999;

@@ -1,7 +1,9 @@
 const mongoose =require('mongoose');
 const { options } = require('nodemon/lib/config');
+const dotenv=require('dotenv')
+dotenv.config();
 
-const mongoURI="mongodb+srv://root:root@cluster0.8lnw59s.mongodb.net/novafit-backend?retryWrites=true&w=majority";
+const mongoURI=process.env.MONGO_URL
 
 const connectToMongo=()=>{
 

@@ -13,6 +13,7 @@ const instance = new Razorpay({
 
 router.get("/", (req, res) => {
   let amount;
+  // res.send("hello")
   const plan = req.query.plan; // Get the selected plan from the query parameter
 
   if (plan === "Gold") {
