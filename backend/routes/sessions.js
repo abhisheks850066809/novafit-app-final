@@ -121,15 +121,23 @@ router.post('/booksession',async (req, res) => {
     }
   })
 
-  router.get("/getsessions/:id", async (req, res) => {
+  router.get("/getsessions",fetchtrainee, async (req, res) => {
+    // try {
+    //   const userId = req.params.id;
+    //   const sessions = await Session.find({ userId: userId });
+    //   res.json(sessions);
+    // } catch (err) {
+    //   console.error(err);
+    //   res.status(500).send("Server error");
+    // }
     try {
-      const userId = req.params.id;
-      const sessions = await Session.find({ userId: userId });
-      res.json(sessions);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server error");
-    }
+      const sessions = await Session.find({trainee: req.traineeId.id});
+      res.json(sessions)
+
+  } catch (error) {
+      console.error(error.message)
+      res.status(500).send("Internal Server Error")
+  }
   });
 
 
