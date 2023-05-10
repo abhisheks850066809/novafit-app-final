@@ -38,7 +38,7 @@ router.post('/createuser', [
                 id: trainee.id
             }
         }
-
+//
         const authtoken = jwt.sign(data, JWT_SECRET);
         success=true;
         res.json({success,authtoken})
