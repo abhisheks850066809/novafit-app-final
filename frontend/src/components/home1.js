@@ -916,6 +916,9 @@ function home1() {
                                     <a href="/contactus" class="footer-link">Contact Us</a>
                                 </li>
                                 <li>
+                                <a href="http://localhost:7000/checkout">Checkout</a>
+                                </li>
+                                <li>
                                     <a href="/FAQ" class="footer-link">FAQ</a>
                                 </li>
 

@@ -26,7 +26,7 @@ function TraineeSignup() {
     if(json.success)
     {
       localStorage.setItem('token',json.authtoken);
-      nevigate("/login");
+      nevigate("/traineelogin");
     //   props.showAlert("Account Created Successfully","success");
     }
   }

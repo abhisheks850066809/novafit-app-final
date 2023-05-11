@@ -26,7 +26,7 @@ const GymUserForm = () => {
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                // 'Authorization': `Bearer ${token}`,
                 'auth-token':`${token}`
             },
             body: JSON.stringify(

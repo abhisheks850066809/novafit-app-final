@@ -37,6 +37,8 @@ function App() {
         <Route exact path="/FAQ" Component={Faqcode} />
         <Route exact path="/createprofile" Component={CreateProfile} />
         <Route exact path="/admin" Component={AdminLogin} />
+        <Route exact path="/home2" Component={home2} />
+        {/* <Route exact path="/checkout" Component={Checkout} /> */}
 
       </Routes>
 

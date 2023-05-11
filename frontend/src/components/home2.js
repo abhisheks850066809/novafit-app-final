@@ -29,7 +29,7 @@ function home2() {
                             <ul class="navbar-list">
 
                                 <li>
-                                    <a href="#home" class="navbar-link active" data-nav-link>Home</a>
+                                    <a href="/" class="navbar-link active" data-nav-link>Home</a>
                                 </li>
 
                                 <li>
