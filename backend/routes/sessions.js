@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require("mongoose");
 const router = express.Router();
 const Trainer = require('../models/Trainer');
+const Trainee = require('../models/Trainee');
 const Subscription = require('../models/SubscriptionSchema');
 const Session = require('../models/Sessions');
 const fetchtrainee = require('../middleware/fetchtrainee')
@@ -9,12 +10,16 @@ const fetchtrainee = require('../middleware/fetchtrainee')
 
 
 
-router.post('/booksession',async (req, res) => {
+router.post('/booksession',fetchtrainee,async (req, res) => {
     try {
-      const { userId, activity, slot, date } = req.body;
+      const {activity, slot, date } = req.body;
+
+        const traineeId = req.traineeId;
+        const trainee = await Trainee.findById(traineeId);
+        const traineeid = trainee._id;
   
       // Find the subscription for the user
-      const subscription = await Subscription.findOne({trainee:userId,isActive:true });
+      const subscription = await Subscription.findOne({trainee:trainee._id,isActive:true });
       // console.log(userId)
       // console.log(subscription.isActive)
       if (!subscription) {
@@ -27,7 +32,7 @@ router.post('/booksession',async (req, res) => {
       }
   
       // Find the session to book
-      const sess = await Session.findOne({userId,activity, slot, date });
+      const sess = await Session.findOne({traineeid,activity, slot, date });
       if (sess) {
         return res.status(400).json({ message: "you have already booked the session" });
       }
@@ -44,7 +49,7 @@ router.post('/booksession',async (req, res) => {
       // Update the session with the user and decrement the subscription's sessionsLeft count
 
       const session = new Session({
-      userId :userId,
+      userId :traineeid,
       activity :activity,
       slot : slot,
       date :date,
@@ -76,9 +81,15 @@ router.post('/booksession',async (req, res) => {
 
 
 
-  router.post('/cancelSession' , async (req, res) => {
+  router.post('/cancelSession/:id',fetchtrainee, async (req, res) => {
     try {
-      const { userId, sessionId } = req.body;
+      //const { sessionId } = req.body;
+
+      let sessionId = req.params.id;
+
+      const traineeId = req.traineeId;
+      const trainee = await Trainee.findById(traineeId);
+      const traineeid = trainee._id;
   
       // Find the session to cancel
       const session = await Session.findById(sessionId);
@@ -87,7 +98,7 @@ router.post('/booksession',async (req, res) => {
       }
 
       // Check if the user owns the session
-      if (session.userId.toString() !== new mongoose.Types.ObjectId(userId).toString()) {
+      if (session.userId.toString() !== new mongoose.Types.ObjectId(traineeid).toString()) {
         return res.status(400).json({ message: "User does not own the session" });
       }
   
@@ -96,7 +107,7 @@ router.post('/booksession',async (req, res) => {
       const timeDiff = sessionStart.getTime() - Date.now();
   
       // Check if the time difference is less than 48 hours (172800000 milliseconds)
-      if (timeDiff < 60000) {
+      if (timeDiff < 172800000) {
         return res.status(400).json({ message: "Session cannot be cancelled within 48 hours of its start time" });
       }
   
@@ -121,44 +132,55 @@ router.post('/booksession',async (req, res) => {
     }
   })
 
-  router.get("/getsessions",fetchtrainee, async (req, res) => {
-    // try {
-    //   const userId = req.params.id;
-    //   const sessions = await Session.find({ userId: userId });
-    //   res.json(sessions);
-    // } catch (err) {
-    //   console.error(err);
-    //   res.status(500).send("Server error");
-    // }
+  router.get("/getsessions",fetchtrainee,async (req, res) => {
     try {
-      const sessions = await Session.find({trainee: req.traineeId.id});
-      res.json(sessions)
-
-  } catch (error) {
-      console.error(error.message)
-      res.status(500).send("Internal Server Error")
-  }
+      const traineeId = req.traineeId;
+      const trainee = await Trainee.findById(traineeId);
+      const traineeid = trainee._id;
+      const sessions = await Session.find({ userId: traineeid });
+      res.json(sessions);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server error");
+    }
   });
 
 
 
-  router.get('/getsubscriptions/:id', async (req, res) => {
+  router.get('/getsubscriptions',fetchtrainee,async (req, res) => {
     try {
-      const userId = req.params.id;
-      const subscriptions = await Subscription.find({ trainee: userId });
+      checkSubscription();
+      const traineeId = req.traineeId;
+      const trainee = await Trainee.findById(traineeId);
+      const traineeid = trainee._id;
+      const subscriptions = await Subscription.find({ trainee: traineeid });
       res.json(subscriptions);
     } catch (err) {
       console.error(err);
       res.status(500).send("Server error");
     }
   });
-  
-    
-    
-    
-    
-    
-    
-  
+
+ 
+
+const checkSubscription = async () => {
+  try {
+    const subscriptions = await Subscription.find();
+    if (!subscriptions || subscriptions.length === 0) {
+      console.log('No subscriptions found');
+      return;
+    }
+
+    for (const subscription of subscriptions) {
+      if (subscription.expiry < new Date()) {
+        subscription.isActive = false;
+        await subscription.save();
+      }
+    }
+    console.log('Subscriptions updated successfully');
+  } catch (error) {
+    console.error(error);
+  }
+};
   
 module.exports = router;
