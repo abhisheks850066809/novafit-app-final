@@ -93,7 +93,7 @@ let success=false;
 //  Route 3 Get logged user details using POST  auth api/auth/getuser,  login required
 router.post('/getuser', fetchtrainee,async (req, res) => {
 try {
-     traineeId=req.trainee.id
+    const traineeId=req.traineeId
     const trainee =await Trainee.findById(traineeId).select("-password")
     res.send(trainee)
 } catch (error) {
