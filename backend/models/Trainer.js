@@ -16,7 +16,7 @@ const TrainerSchema = new mongoose.Schema({
   },
   expertise: {
     type: String,
-    enum: ['Swimming', 'Zoomba', 'Gym', 'Power yoga','Fat buring','Cycling','Strength training'],
+    //enum: ['Swimming', 'Zoomba', 'Gym', 'Power yoga','Fat buring','Cycling','Strength training'],
     required: true,
   },
   experience:{

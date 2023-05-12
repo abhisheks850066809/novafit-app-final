@@ -38,12 +38,7 @@ const subscriptionSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
-  },
-  status: { 
-    type: String, 
-    enum: ['pending', 'success', 'failed'],
-     default: 'failed'
-     }
+  }
 });
 
 module.exports = mongoose.model('Subscription', subscriptionSchema);

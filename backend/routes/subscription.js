@@ -4,7 +4,7 @@ const router = express.Router();
 const Subscription = require('../models/SubscriptionSchema');
 const Trainee = require('../models/Trainee');
 const Trainer = require('../models/Trainer');
-const Payment = require('../models/Payment');
+const fetchtrainee = require('../middleware/fetchtrainee');
 // const { findById } = require('../models/Payment');
 
 
@@ -23,154 +23,143 @@ const Payment = require('../models/Payment');
 //   }
 // };
 
-const handleSubscription = async(email , paymentId) => {
- try{
-   console.log(email);
-   console.log(paymentId);
-    //const trainee = fetchTraineeIdByEmail(email);
-    const trainee = await Trainee.findOne( {'email':email} );
-    console.log(trainee._id);
-    const pay = await Payment.findOne({ 'paymentId': paymentId });
-    const payId = pay._id
-    console.log(payId);
-  
+// const handleSubscription = async(email , paymentId) => {
+//  try{
+//    console.log(email);
+//    console.log(paymentId);
+//     //const trainee = fetchTraineeIdByEmail(email);
+//     const trainee = await Trainee.findOne( {'email':email} );
+//     console.log(trainee._id);
 
-    const subs = await Subscription.findOne({ trainee: trainee._id, isActive: true });
-    if (subs) {
-      throw new Error('User already has an active subscription');
-    }
-
-    let trainer = null;
-    if (pay.plan === 'platinum') {
-      trainer = await Trainer.findOne({ experience: { $gte: 5 }, expertise: 'Gym' });
-    } else {
-      const gymTrainer = await Trainer.findOne({ experience: { $lte: 5 }, expertise: 'Gym' });
-      if (gymTrainer) {
-        trainer = gymTrainer;
-      }
-    }
-    console.log("trainee", trainee);
-    console.log("trainer", trainer);  //check here
-    console.log(pay.plan);
-    const duration = pay.plan === 'silver' ? 30 : pay.plan === 'gold' ? 90 : 180;
-    const sessions =pay.plan === 'silver' ? 2 :pay.plan=== 'gold' ? 10 : 999;
-    const price = pay.plan=== 'silver' ? 500 : pay.plan === 'gold' ? 1200 : 5000;
-
-    console.log(pay.status);
-
-    if (pay.status !== 'success') {
-      throw new Error('Invalid payment ID or payment not successful');
-    }
-
-    const subscription = new Subscription({
-      name: pay.plan,
-      price: price,
-      duration: duration,
-      sessions: sessions,
-      trainer: trainer._id,
-      trainee: trainee._id,
-      expiry: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
-      isActive: true,
-      status: 'success',
-    });
-
-    await subscription.save();
-    //return subscription;
-  } catch (error) {
-    console.error(error);
-    throw new Error('Server error');
-  }
-};
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// router.post('/createSubscription',async (req, res) => {
-//   try {
-//     const userId = req.body.userId;
-//     const user = await Trainee.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
-
-//     const Subs = await Subscription.findOne({ user: userId, isActive: true });
-
-//     if (Subs) {
-//       return res.status(400).json({ message: 'User already has an active subscription' });
+//     const subs = await Subscription.findOne({ trainee: trainee._id, isActive: true });
+//     if (subs) {
+//       throw new Error('User already has an active subscription');
 //     }
 
 //     let trainer = null;
-//     if (req.body.name === 'platinum') {
-//       trainer = await Trainer.findOne({ experience: { $gte: 5 }, expertise: 'gym' });
+//     if (pay.plan === 'platinum') {
+//       trainer = await Trainer.findOne({ experience: { $gte: 5 }, expertise: 'Gym' });
 //     } else {
-//       const gymTrainer = await Trainer.findOne({experience: {$lte: 5}, expertise: 'gym' });  //less than 5
+//       const gymTrainer = await Trainer.findOne({ experience: { $lte: 5 }, expertise: 'Gym' });
 //       if (gymTrainer) {
-//         trainer = gymTrainer._id;
+//         trainer = gymTrainer;
 //       }
 //     }
+//     console.log("trainee", trainee);
+//     console.log("trainer", trainer);  //check here
+//     console.log(pay.plan);
+//     const duration = plan === 'silver' ? 30 : plan === 'gold' ? 90 : 180;
+//     const sessions =plan === 'silver' ? 2 :plan=== 'gold' ? 10 : 999;
+//     const price = plan=== 'silver' ? 500 : plan === 'gold' ? 1200 : 5000;
 
-//     const duration =
-//       req.body.name === 'silver'
-//         ? 30
-//         : req.body.name === 'gold'
-//         ? 90
-//         : 180;
-
-//     const sessions =
-//       req.body.name === 'silver'
-//         ? 2
-//         : req.body.name === 'gold'
-//         ? 10
-//         : 999;
-
-//         const price = 
-//         req.body.name === 'silver'
-//         ? 500
-//         :  req.body.name === 'gold'
-//         ? 1200
-//         : 5000;
-
-//    const payment = await Payment.findById(req.body.paymentId);
-//   if (!payment || payment.status !== 'success') {
-//     return res.status(400).send('Invalid payment ID or payment not successful');
-//   }
+   
 
 //     const subscription = new Subscription({
-//       name: req.body.name,
+//       name: plan,
 //       price: price,
 //       duration: duration,
 //       sessions: sessions,
-//       trainer: trainer,
-//       user: user._id,
+//       trainer: trainer._id,
+//       trainee: trainee._id,
 //       expiry: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
 //       isActive: true,
-//       status : "success"
+//       status: 'success',
 //     });
 
 //     await subscription.save();
-
-//     return res.status(201).json(subscription);
+//     //return subscription;
 //   } catch (error) {
 //     console.error(error);
-//     return res.status(500).json({ error: 'Server error' });
+//     throw new Error('Server error');
 //   }
-// });
+// };
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+router.post('/buySubscription',fetchtrainee,async (req, res) => {
+  try {
+    const { plan } = req.body;
+    const traineeId = req.traineeId;
+    const trainee = await Trainee.findById(traineeId);
+    const traineeid = trainee._id;
+    if (!trainee) {
+      return res.status(404).json({ error: 'Trainee not found' });
+    }
+
+    const Subs = await Subscription.findOne({ trainee: traineeid, isActive: true });
+    if (Subs) {
+      return res.status(400).json({ message: 'You already have an active subscription' });
+    }
+
+    let trainer = null;
+    if (plan===  'platinum') {
+      trainer = await Trainer.findOne({ experience: { $gte: 5 }, expertise: 'gym' });
+      console.log(trainer);
+    } else {
+      const gymTrainer = await Trainer.findOne({experience: {$lte: 5}, expertise: 'gym' });  //less than 5
+      if (gymTrainer) {
+        trainer = gymTrainer._id;
+      }
+    }
+
+    const duration =
+        plan === 'silver'
+        ? 30
+        : plan === 'gold'
+        ? 90
+        : 180;
+
+    const sessions =
+      plan === 'silver'
+        ? 2
+        : plan === 'gold'
+        ? 10
+        : 999;
+
+        const price = 
+        plan === 'silver'
+        ? 500
+        : plan === 'gold'
+        ? 1200
+        : 5000;
+
+
+    const subscription = new Subscription({
+      name: plan,
+      price: price,
+      duration: duration,
+      sessions: sessions,
+      trainer: trainer,
+      trainee: traineeid,
+      expiry: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
+      isActive: true
+    });
+
+    await subscription.save();
+
+    return res.status(201).json(subscription);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
 
 
 
@@ -263,5 +252,5 @@ const handleSubscription = async(email , paymentId) => {
 //   }
 // });
 
-module.exports = handleSubscription;
+module.exports = router;
 
