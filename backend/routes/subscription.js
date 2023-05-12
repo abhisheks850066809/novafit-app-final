@@ -102,7 +102,7 @@ router.post('/buySubscription',fetchtrainee,async (req, res) => {
     if (!trainee) {
       return res.status(404).json({ error: 'Trainee not found' });
     }
-
+//
     const Subs = await Subscription.findOne({ trainee: traineeid, isActive: true });
     if (Subs) {
       return res.status(400).json({ message: 'You already have an active subscription' });
