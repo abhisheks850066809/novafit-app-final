@@ -4,7 +4,7 @@ const router = express.Router();
 const Trainer = require('../models/Trainer');
 const Trainee = require('../models/Trainee');
 
-
+// test comment 
 router.get('/getTrainers', async (req,res) => {
 try{
     const trainers = await Trainer.find();
