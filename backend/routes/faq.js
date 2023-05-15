@@ -50,7 +50,7 @@ router.post('/addfaq', fetchadmin, [
         const faq = new Faq({question, answer, tag, admin: req.admin.id})
         const savedFaq = await faq.save()
 
-        res.json(savedFaq)
+        res.json({message: "Faq is added."})
 
     } catch (error) {
         console.error(error.message)
