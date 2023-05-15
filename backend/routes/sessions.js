@@ -69,13 +69,14 @@ router.post('/booksession',fetchtrainee,async (req, res) => {
       }
   
       await session.save();
-      subscription.sessions -= 1;
-      await subscription.save();
+      const subscriptions = await Subscription.findOne({trainee:traineeid,isActive:true });
+      subscriptions.sessions -= 1;
+      await subscriptions.save();
   
       res.json({ message: "Session booked successfully" });
     } catch (err) {
       console.log(err);
-      res.status(500).json({ message: "Server Error" });
+      res.status(500).json({ error: "Server Error" });
     }
   })
 
@@ -96,10 +97,11 @@ router.post('/booksession',fetchtrainee,async (req, res) => {
       if (!session) {
         return res.status(400).json({ message: "Session not found" });
       }
-
+      
+      const subscription = await Subscription.findOne({ trainee: traineeid, isActive: true });
       // Check if the user owns the session
       if (session.userId.toString() !== new mongoose.Types.ObjectId(traineeid).toString()) {
-        return res.status(400).json({ message: "User does not own the session" });
+        return res.status(400).json({ message: "you do not own the session" });
       }
   
       // Calculate the time difference between the session start time and the current time
@@ -119,7 +121,6 @@ router.post('/booksession',fetchtrainee,async (req, res) => {
       await session.save();
   
       // Increment the subscription's sessionsLeft count and save the changes to the Subscription collection
-      const subscription = await Subscription.findOne({ user: userId, isActive: true });
       subscription.sessions += 1;
       await subscription.save();
   

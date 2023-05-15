@@ -154,7 +154,7 @@ router.post('/buySubscription',fetchtrainee,async (req, res) => {
 
     await subscription.save();
 
-    return res.status(201).json(subscription);
+    return res.status(201).json({message: 'success'});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Server error' });

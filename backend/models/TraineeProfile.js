@@ -6,50 +6,56 @@ const ProfileSchema = new Schema({
     userId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'trainee',
-        required:true
+        default:null
     },
     name:{
         type:String,
-        required:true
+        default:null
     },
     email:{
         type:String,
-        required:true
+        default:null
     },
     gender:{
         type:String,
-        required:true
+        default:null
     },
     dob:{
         type:Date,
-        required:true
+        default:null
     },
     height:{
         type:Number,
-        required:true
+        default:null
     },
     weight:{
         type:Number,
-        required:true
+        default:null
     },
     goal:{
         type:String,
-        required:true
+        default:null
+    },
+	body_temp: { 
+        type: Number,
+        default:null
     },
 
-    vitals: [{
-		body_temp: 
-        { type: Number, required: true, },
+	pulse_rate: { 
+        type: Number,
+        default:null
+    },
 
-		pulse_rate: 
-        { type: Number, required: true, },
+    resp_rate: { 
+        type: Number, 
+        default:null 
+        },
 
-        resp_rate: 
-        { type: Number, required: true, },
-
-        blood_pressure: 
-        { type: Number, required: true, },
-	}],
+    blood_pressure: {
+        type: Number,
+        default:null 
+    }
+	
 
 });
 

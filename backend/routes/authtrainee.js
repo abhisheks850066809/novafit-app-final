@@ -2,6 +2,7 @@ const express = require('express');
 const {body, validationResult} = require('express-validator');
 const router = express.Router()
 const Trainee = require('../models/Trainee')
+const Profile = require('../models/TraineeProfile')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken');
 // const {is} = require('express/lib/request');
@@ -28,11 +29,12 @@ router.post('/createuser', [
         let trainee = await Trainee.findOne({email: req.body.email});
         if (trainee) {
             
-            return res.status(400).json({error: "Sorry email already exists"})
+            return res.status(400).json({message: "Sorry email already exists"})
         }
         const salt = await bcrypt.genSalt(10);
         const secPass = await bcrypt.hash(req.body.password, salt);
         trainee= await Trainee.create({name: req.body.name, password: secPass, email: req.body.email,isSubscribed:req.body.isSubscribed})
+        await createProfile(trainee.id);
         const data = {
             trainee: {
                 id: trainee.id
@@ -48,6 +50,30 @@ router.post('/createuser', [
         res.status(500).send("Internal Server Error")
     }
 })
+
+
+const createProfile = async (userId) => {
+    try {
+        await Profile.create({
+            userId,
+            name: null,
+            email: null,
+            gender: null,
+            dob: null,
+            height: null,
+            weight: null,
+            goal: null,
+            body_temp:null,
+            pulse_rate:null,
+            resp_rate:null,
+            blood_pressure:null
+
+        });
+    } catch (error) {
+        console.error(error.message);
+        throw new Error('Failed to create profile for user');
+    }
+};
 
 //  Route 2 Authenticate a user doenst require auth api/auth/login, no login required
 router.post('/login', [
@@ -65,11 +91,11 @@ let success=false;
     try {
         let trainee = await Trainee.findOne({email});
         if (! trainee) {
-            return res.status(400).json({error: "please try to login with correct credintails"})
+            return res.status(400).json({message: "please try to login with correct credintails"})
         }
         const passwordCompare = await bcrypt.compare(password, trainee.password);
         if (! passwordCompare) {
-            return res.status(400).json({error: "please try to login with correct credintails"})
+            return res.status(400).json({message: "please try to login with correct credintails"})
         }
         const data = {
             trainee: {
@@ -79,7 +105,7 @@ let success=false;
         // console.log("hii")
         success=true;
         const authtoken = jwt.sign(data, JWT_SECRET);
-        res.json({success,authtoken})
+        res.json({success,authtoken,message: "Login Successful"})
         
 
     } catch (error) {

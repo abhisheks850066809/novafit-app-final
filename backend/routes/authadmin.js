@@ -27,7 +27,7 @@ router.post('/createuser', [
 
         let admin = await Admin.findOne({email: req.body.email});
         if (admin) {
-            return res.status(400).json({error: "Sorry email already exists"})
+            return res.status(400).json({message: "Sorry email already exists"})
         }
         const salt = await bcrypt.genSalt(10);
         const secPass = await bcrypt.hash(req.body.password, salt);
@@ -65,11 +65,11 @@ router.post('/login', [
     try {
         let admin = await Admin.findOne({email});
         if (! admin) {
-            return res.status(400).json({error: "please try to login with correct credintails"})
+            return res.status(400).json({message: "please try to login with correct credintails"})
         }
         const passwordCompare = await bcrypt.compare(password, admin.password);
         if (! passwordCompare) {
-            return res.status(400).json({error: "please try to login with correct credintails"})
+            return res.status(400).json({message: "please try to login with correct credintails"})
         }
         const data = {
             admin: {
@@ -79,7 +79,7 @@ router.post('/login', [
         // console.log("hii")
         success=true;
         const authtoken = jwt.sign(data, JWT_SECRET);
-        res.json({success,authtoken})
+        res.json({success,authtoken,message: "Login Successful "})
 
     } catch (error) {
         console.error(error.message)
@@ -92,7 +92,7 @@ router.post('/login', [
 //  Route 3 Get logged user details using POST  auth api/auth/getuser,  login required
 router.post('/getuser', fetchadmin,async (req, res) => {
 try {
-     adminId=req.admin.id
+     const adminId=req.admin.id
     const admin =await Admin.findById(adminId).select("-password")
     res.send(admin)
 } catch (error) {

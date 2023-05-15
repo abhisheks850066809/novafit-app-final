@@ -50,9 +50,14 @@ router.post('/createtraineeprofile',fetchtrainee,async (req,res) => {
 
 //Route 4: update user profile using PUT: Login Required
 
-router.put('/updatetraineeprofile/:id',fetchtrainee,async(req,res) =>{
-    const profileId = req.params.id;
-    const{ dob,gender,weight,height,vitals } = req.body;
+router.put('/updatetraineeprofile',fetchtrainee,async(req,res) =>{
+    //const profileId = req.params.id;
+    const traineeId = req.traineeId;
+    const trainee = await Trainee.findById(traineeId);
+    const profile = await Profile.findOne({userId: traineeId});
+    const profileId = profile._id
+    console.log(profileId);
+    const{ dob,gender,weight,height,body_temp,goal,pulse_rate,resp_rate,blood_pressure } = req.body;
 
     try{
         const profile = await Profile.findById(profileId);
@@ -60,12 +65,19 @@ router.put('/updatetraineeprofile/:id',fetchtrainee,async(req,res) =>{
         if(! profile){
             return res.status(404).send({message: 'Profile not found'});
         }
-
+        profile.name = trainee.name;
+        profile.email = trainee.email;
         profile.dob = dob || profile.dob;
         profile.gender = gender || profile.gender;
         profile.weight = weight || profile.weight;
         profile.height = height || profile.height;
-        profile.vitals = vitals || profile.vitals
+        profile.goal = goal;
+        profile.body_temp = body_temp;
+        profile.pulse_rate = pulse_rate;
+        profile.resp_rate = resp_rate;
+        profile.blood_pressure = blood_pressure;
+        
+
 
         await profile.save();
 
@@ -78,8 +90,12 @@ router.put('/updatetraineeprofile/:id',fetchtrainee,async(req,res) =>{
 
 
 //Get Trainee profile Login required
-router.get('/gettraineeprofile/:id',fetchtrainee,async (req,res) => {
-    const profileId = req.params.id;
+router.get('/gettraineeprofile',fetchtrainee,async (req,res) => {
+    //const profileId = req.params.id;
+    const traineeId = req.traineeId;
+    const trainee = await Trainee.findById(traineeId);
+    const profile = await Profile.findOne({userId: traineeId});
+    const profileId = profile._id
 
     try{
         const profile = await Profile.findById(profileId);
@@ -94,10 +110,12 @@ router.get('/gettraineeprofile/:id',fetchtrainee,async (req,res) => {
             gender:profile.gender,
             dob:profile.dob,
             height:profile.height,
-            weight:Profile.weight,
-            userId:profile.userId,
-            vitals:profile.vitals,
-            goal:profile.goal
+            weight:profile.weight,
+            goal:profile.goal,
+            body_temp:profile.body_temp,
+            pulse_rate:profile.pulse_rate,
+            resp_rate:profile.resp_rate,
+            blood_pressure:profile.blood_pressure
         });
 
 

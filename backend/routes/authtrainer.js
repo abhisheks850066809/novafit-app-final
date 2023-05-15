@@ -29,7 +29,7 @@ router.post('/createuser', [
 
         let trainer = await Trainer.findOne({email: req.body.email});
         if (trainer) {
-            return res.status(400).json({error: "Sorry email already exists"})
+            return res.status(400).json({message: "Sorry email already exists"})
         }
         const salt = await bcrypt.genSalt(10);
         const secPass = await bcrypt.hash(req.body.password, salt);
@@ -74,11 +74,11 @@ router.post('/login', [
     try {
         let trainer = await Trainer.findOne({email});
         if (! trainer) {
-            return res.status(400).json({error: "please try to login with correct credintails"})
+            return res.status(400).json({message: "please try to login with correct credintails"})
         }
         const passwordCompare = await bcrypt.compare(password, trainer.password);
         if (! passwordCompare) {
-            return res.status(400).json({error: "please try to login with correct credintails"})
+            return res.status(400).json({message: "please try to login with correct credintails"})
         }
         const data = {
             trainer: {
