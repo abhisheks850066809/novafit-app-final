@@ -1,9 +1,12 @@
 const mongoose =require('mongoose');
 const { options } = require('nodemon/lib/config');
 const dotenv=require('dotenv')
-dotenv.config();
+// dotenv.config();
+PORT=8080
+API_URL = "/api/v1"
 
-const mongoURI=process.env.MONGO_URL
+
+const mongoURI="mongodb+srv://anigdhabansal:hello123@cluster0.zqfndbm.mongodb.net/NoVaFit?retryWrites=true&w=majority"
 
 const connectToMongo=()=>{
 
