@@ -103,6 +103,7 @@ app.use('/api/sessions',require('./routes/sessions'))
 app.use('/api/adminroutes',require('./routes/adminroutes'))
 app.use('/api/attendance',require('./routes/attendance'))
 app.use('/api/subscription',require('./routes/subscription'))
+app.use('/api/faq',require('./routes/faq'))
 
 //app.use('/api/subscription',require('./routes/subscription'))
 // app.use('/api/faq',require('./routes/faq'))
