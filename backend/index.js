@@ -79,7 +79,7 @@ app.set("view engine", "ejs");
 app.use(morgan('tiny'));
 
 app.use("/checkout", require("./routes/subscriptionpayment"));
-require('dotenv/config');
+// require('dotenv/config');
 
 //Routes
 const categoriesRoutes = require('./routes/categories');
