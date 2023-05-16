@@ -1,7 +1,6 @@
 const mongoose =require('mongoose');
 const { options } = require('nodemon/lib/config');
-const dotenv=require('dotenv')
-// dotenv.config();
+
 PORT=8080
 API_URL = "/api/v1"
 
